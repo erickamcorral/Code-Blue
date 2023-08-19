@@ -5,9 +5,9 @@ from wtforms import form
 from flaskr.forms import SignupForm
 from flask import Flask, render_template, Response, jsonify, url_for, redirect, request
 import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.preprocessing import image
+from tf.keras.models import load_model
+from tf.keras.preprocessing.image import img_to_array
+from tf.keras.preprocessing import image
 import numpy as np
 import cv2
 import pickle
@@ -20,7 +20,7 @@ from wtforms import StringField,TextAreaField,SubmitField,PasswordField,DateFiel
 from wtforms import validators
 from wtforms.validators import DataRequired,Email,EqualTo,Length
 from flask import Flask, render_template, Response, jsonify, url_for
-from tensorflow.keras.preprocessing import image
+from tf.keras.preprocessing import image
 from flask import Flask, flash, request, redirect, url_for
 from flask import session
 from flask import Flask
@@ -28,7 +28,7 @@ from flask import url_for
 from flask import redirect
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, LoginManager
 from flask_login import current_user, login_user
 from flask_login import login_required, current_user, login_user, logout_user
 
@@ -80,7 +80,6 @@ class UserModel(UserMixin, db.Model):
         return check_password_hash(self.password_hash,password)
 
 #Create form class
-from flask_login import LoginManager
 login = LoginManager()
  
 @login.user_loader
@@ -91,7 +90,7 @@ db.init_app(app)
 @app.before_first_request
 def create_table():
     db.create_all()
-login.init_app(app)
+login.init_app(app) # type: ignore
 login.login_view = 'login'
 
 def gen_frames():
@@ -163,30 +162,69 @@ def upload_file():
 @app.route('/resources')
 def resources():
    return render_template('resources.html')
-	
+    
 @app.route('/uploader', methods = ['POST'])
 def upload_image():
-	if 'file' not in request.files:
-		flash('No file part')
-		return redirect(request.url)
-	file = request.files['file']
-	if file.filename == '':
-		flash('No image selected for uploading')
-		return redirect(request.url)
-	if file and allowed_file(file.filename):
-		filename = secure_filename(file.filename)
-		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		#print('upload_image filename: ' + filename)
-		flash('Image successfully uploaded and displayed below')
-		return render_template('upload.html', filename=filename)
-	else:
-		flash('Allowed image types are -> png, jpg, jpeg, gif')
-		return redirect(request.url)
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No image selected for uploading')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #print('upload_image filename: ' + filename)
+        flash('Image successfully uploaded and displayed below')
+        return render_template('upload.html', filename=filename)
+    else:
+        flash('Allowed image types are -> png, jpg, jpeg, gif')
+        return redirect(request.url)
+
+@app.route('/upload-predict', methods=['POST'])
+def upload_image_button():
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No image selected for uploading')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
+        predict_asymmetry_upload(cv2.imread(path))
+        #print('upload_image filename: ' + filename)
+        #flash('Image successfully uploaded and displayed below')
+        #return render_template('upload.html', filename=filename)
+    else:
+        flash('Allowed image types are -> png, jpg, jpeg, gif')
+        return redirect(request.url)
+def predict_asymmetry_upload(image):
+    """ Face detection section """
+    # Load stroke detection model
+    classifier = load_model("StrokeDetectionModel.h5")
+
+    #data = pickle.loads(open("face_enc", "rb").read())
+    test_image = image.resize((100,100))
+    test_image = img_to_array(test_image)
+    test_image = test_image/255.0
+    test_image = np.expand_doms(test_image,axis=0)
+    class_labels = ['Normal','Asymmetrical']
+    predictions = classifier.predict(test_image)[0]
+    label = class_labels[predictions.argmax()]
+
+    if "Asymmetrical" in label:
+        return render_template("buttons.html")
+    elif "Normal" in label:
+        return render_template("normal.html")
 
 @app.route('/display/<filename>')
 def display_image(filename):
-	#print('display_image filename: ' + filename)
-	return redirect(url_for('static', filename='uploads/' + filename), code=301)
+    #print('display_image filename: ' + filename)
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -256,5 +294,3 @@ def buttons():
 
 if __name__ == "__main__":
     app.run(debug = True)
-
-
