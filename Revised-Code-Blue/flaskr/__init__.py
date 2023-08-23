@@ -55,7 +55,12 @@ except:
 # Connect camera to the application
 camera = cv2.VideoCapture(0)
 
+def before_request():
+        with app.app_context():
+            db.create_all()
+
 app = Flask(__name__)
+app.before_request(before_request)
 app.config['SECRET_KEY']='thisisfirstflaskapp'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = '/tmp'
@@ -88,7 +93,7 @@ def load_user(id):
     return UserModel.query.get(int(id))
 
 db.init_app(app)
-@app.before_first_request
+before_request()
 def create_table():
     db.create_all()
 login.init_app(app)
@@ -103,7 +108,7 @@ def gen_frames():
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-app.config['SECRET_KEY']='thisisfirstflaskapp'
+
 
 #routing
 
