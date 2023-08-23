@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.utils import redirect
 from wtforms import form 
-from flaskr.forms import SignupForm
+from forms import SignupForm
 from flask import Flask, render_template, Response, jsonify, url_for, redirect, request
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -57,6 +57,7 @@ camera = cv2.VideoCapture(0)
 
 app = Flask(__name__)
 app.config['SECRET_KEY']='thisisfirstflaskapp'
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = '/tmp'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user-table.db'
@@ -88,7 +89,7 @@ def load_user(id):
     return UserModel.query.get(int(id))
 
 db.init_app(app)
-@app.before_first_request
+@app.got_first_request
 def create_table():
     db.create_all()
 login.init_app(app)
