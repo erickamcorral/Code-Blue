@@ -109,7 +109,44 @@ def gen_frames():
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+@app.route('/upload-predict', methods=['GET','POST'])
+def upload_image_button():
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No image selected for uploading')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
+        predict_asymmetry_upload(cv2.imread(path))
+        #print('upload_image filename: ' + filename)
+        #flash('Image successfully uploaded and displayed below')
+        #return render_template('upload.html', filename=filename)
+    else:
+        flash('Allowed image types are -> png, jpg, jpeg, gif')
+        return redirect(request.url)
+def predict_asymmetry_upload(image):
+    """ Face detection section """
+    # Load stroke detection model
+    classifier = load_model("StrokeDetectionModel.h5")
 
+    #data = pickle.loads(open("face_enc", "rb").read())
+    test_image = image.resize((100,100))
+    test_image = img_to_array(test_image)
+    test_image = test_image/255.0
+    test_image = np.expand_doms(test_image,axis=0)
+    class_labels = ['Normal','Asymmetrical']
+    predictions = classifier.predict(test_image)[0]
+    label = class_labels[predictions.argmax()]
+
+    if "Asymmetrical" in label:
+        return render_template("buttons.html")
+    elif "Normal" in label:
+        return render_template("normal.html")
 #routing
 
 @app.route('/')
