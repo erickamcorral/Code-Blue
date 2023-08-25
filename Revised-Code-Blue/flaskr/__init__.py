@@ -66,7 +66,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 UPLOAD_FOLDER = '/tmp'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user-table.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy()
  
 class UserModel(UserMixin, db.Model):
@@ -96,7 +96,7 @@ db.init_app(app)
 before_request()
 def create_table():
     db.create_all()
-login.init_app(app)
+login.init_app(app) # type: ignore
 login.login_view = 'login'
 
 def gen_frames():
@@ -109,7 +109,26 @@ def gen_frames():
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-@app.route('/upload-predict', methods=['GET','POST'])
+@app.route('/uploader', methods = ['POST'])
+def upload_image():
+	if 'file' not in request.files:
+		flash('No file part')
+		return redirect(request.url)
+	file = request.files['file']
+	if file.filename == '':
+		flash('No image selected for uploading')
+		return redirect(request.url)
+	if file and allowed_file(file.filename):
+		filename = secure_filename(file.filename)
+		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		#print('upload_image filename: ' + filename)
+		flash('Image successfully uploaded and displayed below')
+		return render_template('upload.html', filename=filename)
+	else:
+		flash('Allowed image types are -> png, jpg, jpeg, gif')
+		return redirect(request.url)
+
+@app.route('/upload-predict', methods=['POST']) #so upload-predict takes POST then because of upload.html
 def upload_image_button():
     if 'file' not in request.files:
         flash('No file part')
@@ -122,7 +141,8 @@ def upload_image_button():
         filename = secure_filename(file.filename)
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(path)
-        predict_asymmetry_upload(cv2.imread(path))
+        predict_asymmetry_upload(cv2.imread(path)) #calls method below which returns the appropriate URL. 
+        #if it says it returns nothing...add return in front of the line above
         #print('upload_image filename: ' + filename)
         #flash('Image successfully uploaded and displayed below')
         #return render_template('upload.html', filename=filename)
@@ -147,6 +167,8 @@ def predict_asymmetry_upload(image):
         return render_template("buttons.html")
     elif "Normal" in label:
         return render_template("normal.html")
+    else:
+        return render_template("homepage.html")
 #routing
 
 @app.route('/')
@@ -207,32 +229,11 @@ def upload_file():
 @app.route('/resources')
 def resources():
    return render_template('resources.html')
-	
-@app.route('/uploader', methods = ['POST'])
-def upload_image():
-	if 'file' not in request.files:
-		flash('No file part')
-		return redirect(request.url)
-	file = request.files['file']
-	if file.filename == '':
-		flash('No image selected for uploading')
-		return redirect(request.url)
-	if file and allowed_file(file.filename):
-		filename = secure_filename(file.filename)
-		file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		#print('upload_image filename: ' + filename)
-		flash('Image successfully uploaded and displayed below')
-		return render_template('upload.html', filename=filename)
-	else:
-		flash('Allowed image types are -> png, jpg, jpeg, gif')
-		return redirect(request.url)
 
 @app.route('/display/<filename>')
 def display_image(filename):
 	#print('display_image filename: ' + filename)
 	return redirect(url_for('static', filename='uploads/' + filename), code=301)
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and \
