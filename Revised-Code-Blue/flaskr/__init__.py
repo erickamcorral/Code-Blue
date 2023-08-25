@@ -124,10 +124,12 @@ def video_feed():
 def predict_asymmetry():
     """ Face detection section """
     # Load stroke detection model
-    classifier = load_model("StrokeDetectionModel.h5")
+    #os.path.join(os.curdir, "StrokeDetectionModel.h5")
+    classifier = load_model("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/StrokeDetectionModel.h5")
+
 
     # Set the facial detection algorithm
-    casc_path_face = "haarcascade_frontalface_default.xml"
+    casc_path_face = "/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/haarcascade_frontalface_default.xml"
     face_cascade = cv2.CascadeClassifier(casc_path_face)
     #data = pickle.loads(open("face_enc", "rb").read())
 
