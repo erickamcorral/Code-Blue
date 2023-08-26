@@ -12,7 +12,7 @@ import numpy as np
 import cv2
 import pickle
 import os
-from flask import Flask, flash
+from flask import Flask, flash, request
 from werkzeug.utils import secure_filename
 import time
 from flask_wtf import FlaskForm
@@ -27,6 +27,7 @@ from flask import Flask
 from flask import url_for
 from flask import redirect
 from flask import request
+from werkzeug import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_login import current_user, login_user
@@ -67,6 +68,8 @@ UPLOAD_FOLDER = '/tmp'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user-table.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 db = SQLAlchemy()
  
 class UserModel(UserMixin, db.Model):
@@ -109,7 +112,7 @@ def gen_frames():
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-@app.route('/uploader', methods = ['GET','POST'])
+"""@app.route('/uploader', methods = ['GET','POST'])
 def upload_image():
 	if 'file' not in request.files:
 		flash('No file part')
@@ -126,9 +129,9 @@ def upload_image():
 		return render_template('upload.html', filename=filename)
 	else:
 		flash('Allowed image types are -> png, jpg, jpeg, gif')
-		return redirect(request.url)
+		return redirect(request.url)"""
 
-@app.route('/upload-predict', methods=['GET','POST']) #so upload-predict takes POST then because of upload.html
+"""@app.route('/upload-predict', methods=['GET','POST']) #so upload-predict takes POST then because of upload.html
 def upload_image_button():       
     if 'file' not in request.files:
         flash('No file part')
@@ -148,12 +151,13 @@ def upload_image_button():
         #return render_template('upload.html', filename=filename)
     else:
         flash('Allowed image types are -> png, jpg, jpeg, gif')
-        return redirect(request.url)
-def predict_asymmetry_upload(image):
+        return redirect(request.url)"""
+def predict_asymmetry_upload():
     """ Face detection section """
     # Load stroke detection model
     classifier = load_model("StrokeDetectionModel.h5")
-
+    path = os.path.join(app.config['UPLOAD_FOLDER'], "asymmetry.jpeg")
+    image = cv2.imread(path)
     #data = pickle.loads(open("face_enc", "rb").read())
     test_image = image.resize((100,100))
     test_image = img_to_array(test_image)
@@ -175,6 +179,17 @@ def predict_asymmetry_upload(image):
 def index():
     return render_template('homepage.html')
 
+@app.route('/upload')
+def upload_file(): # type: ignore
+   return render_template('upload.html')
+	
+@app.route('/uploader', methods = ['GET', 'POST'])
+def upload_file():
+   if request.method == 'POST':
+      f = request.files['file']
+      f.save(secure_filename(f.filename))
+      return 'file uploaded successfully'
+   # if this works out, I want to replace this with return predict_asymmetry_upload 
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -222,10 +237,6 @@ def predict_asymmetry():
         else:
             cv2.putText(frame,'No Face Found',(20,20),cv2.FONT_HERSHEY_SIMPLEX,0.5,(0,255,0),3)
 
-@app.route('/upload')
-def upload_file():
-   return render_template('upload.html')
-
 @app.route('/resources')
 def resources():
    return render_template('resources.html')
@@ -238,8 +249,6 @@ def display_image(filename):
 def allowed_file(filename):
     return '.' in filename and \
     filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 @app.route('/signup', methods = ['POST', 'GET' ] )
 def signup():
