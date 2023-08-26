@@ -6,8 +6,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Cover Template for Bootstrap</title>
-
     <!-- Custom styles for this template -->
     <link href="cover.css" rel="stylesheet">
 
@@ -21,10 +19,8 @@
     <br>
     <div class="cover-container d-flex h-100 p-3 mx-auto flex-column">
         <main role="main" class="inner cover">
-        <h1 class="cover-heading">Welcome to F.A.S.T.</h1>
         <br>
-        <p class="lead">Facial Asymmetry / Stroke Test</p>
-        <p><img src="https://i.ibb.co/71cSJw4/4becf74a42d04d5683d6556111284151.png" alt="FAST-Logo" width="180"></p>
+        <p><img src="https://media.discordapp.net/attachments/877428287280922697/1101305590048890890/Screenshot_2023-04-27_at_5.20.53_PM-removebg-preview.png?width=1592&height=628" alt="CodeBlue-Logo"></p>
         <br>
         <p class="lead">
             <a href="#cam" class="small-btn">Get Started</a>
@@ -40,12 +36,13 @@
 
 <div class="row">
     <div class="col-md-6">
+        
         <div class="jumbotron">
-            <h1 class="display-5">Acting Fast</h1>
-            <p class="lead">Strokes can be unexpected and very dangerous, which is why it is important to take immediate action when stroke symptoms are identified. This is where FAST can help. By scanning facial images, FAST detects potentially dangerous facial asymmetry and notifies an emergency contact.</p>
+            <h1 class="display-5">Technology designed to make strokes obsolete.</h1>
+            <p class="lead">Take immediate action when stroke symptoms are occuring with Code Blue. By scanning facial images, Code Blue detects potentially dangerous facial drooping and notifies an emergency contact.</p>
             <hr class="my-4">
-                <p><h4>Every 40 seconds, someone has a stroke</h4></p>
-                <p><h4>Someone dies of a stroke every 4 minutes</h4></p>
+                <p><h4>1 in 4 people will have a stroke in their lifetime</h4></p>
+                <p><h4>60% of people are unable to identify the signs of stroke</h4></p>
                 <p><h4>87% of strokes are ischemic</h4></p>
                 <p><h4>Strokes can occur at any age</h4></p>
 
@@ -59,11 +56,12 @@
         <div class="card">
             <img src="https://miro.medium.com/max/3000/1*m2gDBT_nc-iE7R4AM3sHBQ.jpeg" class="card-img-top" alt="...">
             <div class="card-body">
-                <h5 class="card-title">About FAST</h5>
-                <p class="card-text">FAST is a web application for stroke detection developed by Code Blue. FAST utilizes artificial intelligence to recognize facial paralysis. Users can acess FAST on any device with an internet connection.</p>
+                <h5 class="card-title">About Code Blue</h5>
+                <p class="card-text">Code Blue is a web application for stroke detection. Code Blue utilizes artificial intelligence to recognize facial paralysis. Users can acess Code Blue on any device with an internet connection.</p>
             </div>
           
           
+        
         </div>
       </div>
 </div>
@@ -73,13 +71,14 @@
 <div class="transparentbox">
     <br>
     <div class="section center" id="demo">
-        <h1 class="cover-heading">Try it out!</h1><br>
+        <h1 class="cover-heading"></h1><br>
         <p class="lead">Position your face in the frame of the camera and click the Detect Asymmetry button below.</p>
             <img class="center" style="object-fit: contain;" src="{{ url_for('video_feed') }}">
             <br><br>
             <!-- <a class="waves-effect waves-light btn-large" id="generate" href="/predict">Detect Asymmetry</a> -->
             <a class="small-btn" href="/predict" role="button">Detect Asymmetry</a>
-            <a class="small-btn" href="/{{ url_for('upload') }}" role="button">Upload Image</a> <!--ok this should fix it, based on all the other things this redirects to upload.html-->
+            <a class="small-btn" href="/uploader" role="button">Upload Image</a>
+ <!--ok this should fix it, based on all the other things this redirects to upload.html-->
             <br><br>
 
     </div>
