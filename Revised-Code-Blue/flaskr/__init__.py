@@ -109,7 +109,7 @@ def gen_frames():
             frame = buffer.tobytes()
             yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-@app.route('/uploader', methods = ['POST'])
+@app.route('/uploader', methods = ['GET','POST'])
 def upload_image():
 	if 'file' not in request.files:
 		flash('No file part')
@@ -128,8 +128,8 @@ def upload_image():
 		flash('Allowed image types are -> png, jpg, jpeg, gif')
 		return redirect(request.url)
 
-@app.route('/upload-predict', methods=['POST']) #so upload-predict takes POST then because of upload.html
-def upload_image_button():
+@app.route('/upload-predict', methods=['GET','POST']) #so upload-predict takes POST then because of upload.html
+def upload_image_button():       
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
@@ -224,16 +224,16 @@ def predict_asymmetry():
 
 @app.route('/upload')
 def upload_file():
-   return render_template('homepage.html')
+   return render_template('upload.html')
 
 @app.route('/resources')
 def resources():
    return render_template('resources.html')
 
-@app.route('/display/<filename>')
+"""@app.route('/display/<filename>')
 def display_image(filename):
 	#print('display_image filename: ' + filename)
-	return redirect(url_for('static', filename='uploads/' + filename), code=301)
+	return redirect(url_for('static', filename='uploads/' + filename), code=301)"""
 
 def allowed_file(filename):
     return '.' in filename and \
