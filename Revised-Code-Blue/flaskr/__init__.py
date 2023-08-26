@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from werkzeug.utils import redirect
+from werkzeug.utils import redirect,secure_filename
+from flask_uploads import UploadSet,configure_uploads,IMAGES,DATA,ALL
 from wtforms import form 
 from flaskr.forms import SignupForm
 from flask import Flask, render_template, Response, jsonify, url_for, redirect, request
@@ -13,7 +14,6 @@ import cv2
 import pickle
 import os
 from flask import Flask, flash, request
-from werkzeug.utils import secure_filename
 import time
 from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,SubmitField,PasswordField,DateField,SelectField
@@ -27,11 +27,11 @@ from flask import Flask
 from flask import url_for
 from flask import redirect
 from flask import request
-from werkzeug import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_login import current_user, login_user
 from flask_login import login_required, current_user, login_user, logout_user
+from werkzeug.datastructures import  FileStorage
 
 
 class LoginForm(FlaskForm):
