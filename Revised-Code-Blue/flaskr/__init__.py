@@ -160,11 +160,14 @@ def predict_asymmetry_upload():
     classifier = load_model("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/StrokeDetectionModel.h5")
     path = os.path.join(app.config['UPLOAD_FOLDER'], "asymmetry.jpeg")
     image = cv2.imread(path)
+    print(np.asarray(image,dtype="float32"))
     #data = pickle.loads(open("face_enc", "rb").read())
-    test_image = image.resize((100,100))
+    #test_image = image.resize((100,100),image)
+    test_image = cv2.resize(image, (100,100))
+    print(np.asarray(test_image, dtype ="float32"))
     test_image = img_to_array(test_image)
     test_image = test_image/255.0
-    test_image = np.expand_doms(test_image,axis=0)
+    test_image = np.expand_dims(test_image,axis=0)
     class_labels = ['Normal','Asymmetrical']
     predictions = classifier.predict(test_image)[0]
     label = class_labels[predictions.argmax()]
