@@ -77,7 +77,11 @@
             <br><br>
             <!-- <a class="waves-effect waves-light btn-large" id="generate" href="/predict">Detect Asymmetry</a> -->
             <a class="small-btn" href="/predict" role="button">Detect Asymmetry</a>
-            <a class="small-btn" href="/uploader" role="button">Upload Image</a>
+             <!-- <a class="small-btn" href="/uploader" role="button" method = "POST">Upload Image</a> -->
+            <form method=POST enctype=multipart/form-data>
+                <input type=file name=file>
+                <input type=submit value=Upload>
+            </form>
  <!--ok this should fix it, based on all the other things this redirects to upload.html-->
             <br><br>
 

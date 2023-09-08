@@ -32,6 +32,8 @@ from flask_login import UserMixin
 from flask_login import current_user, login_user
 from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.datastructures import  FileStorage
+from flask import Flask, flash, request, redirect, url_for
+from werkzeug.utils import secure_filename
 
 
 class LoginForm(FlaskForm):
@@ -155,7 +157,7 @@ def upload_image_button():
 def predict_asymmetry_upload():
     """ Face detection section """
     # Load stroke detection model
-    classifier = load_model("StrokeDetectionModel.h5")
+    classifier = load_model("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/StrokeDetectionModel.h5")
     path = os.path.join(app.config['UPLOAD_FOLDER'], "asymmetry.jpeg")
     image = cv2.imread(path)
     #data = pickle.loads(open("face_enc", "rb").read())
@@ -179,16 +181,17 @@ def predict_asymmetry_upload():
 def index():
     return render_template('homepage.html')
 
+"""
 @app.route('/upload')
 def upload_file(): # type: ignore
    return render_template('upload.html')
-	
-@app.route('/uploader', methods = ['GET', 'POST'])
+"""
+
+@app.route('/uploader', methods = ['POST'])
 def uploader_file():
-   if request.method == 'POST':
-      f = request.files['file']
-      f.save(secure_filename(f.filename))
-      return 'file uploaded successfully'
+            f = request.files['file']
+            f.save(secure_filename(f.filename))
+            return predict_asymmetry_upload()
    # if this works out, I want to replace this with return predict_asymmetry_upload 
 @app.route('/video_feed')
 def video_feed():
@@ -307,6 +310,26 @@ def buttons():
        exec(open("make_call.py").read())
        called = 'Called'
     return render_template('buttons.html')
+
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploader_file',
+                                    filename=filename),code=307)
+    return render_template('upload.html')
 
 if __name__ == "__main__":
     app.run(debug = True)
