@@ -171,11 +171,12 @@ def predict_asymmetry_upload():
     class_labels = ['Normal','Asymmetrical']
     predictions = classifier.predict(test_image)[0]
     label = class_labels[predictions.argmax()]
+    print(label)
 
     if "Asymmetrical" in label:
         return render_template("buttons.html")
     elif "Normal" in label:
-        return render_template("normal.html")
+        return render_template("buttons.html")
     else:
         return render_template("homepage.html")
 #routing
@@ -307,10 +308,10 @@ def buttons():
     sent = ' '
     called = ' '
     if request.method == 'POST':
-        exec(open("send_sms.py").read())
+        exec(open("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/send_sms.py").read())
         sent = "Sent"
     if request.method == 'POST':
-       exec(open("make_call.py").read())
+       exec(open("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/make_call.py").read())
        called = 'Called'
     return render_template('buttons.html')
 
