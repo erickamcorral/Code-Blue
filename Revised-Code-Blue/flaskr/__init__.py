@@ -217,6 +217,8 @@ def upload_file(): # type: ignore
 def uploader_file():
             f = request.files['file']
             f.save(secure_filename(f.filename))
+	    if "wav" in f.filename: #if it's an audio file....I'm really hoping this part works.
+		    return classify_audio() 
             return predict_asymmetry_upload()
    # if this works out, I want to replace this with return predict_asymmetry_upload 
 @app.route('/video_feed')
