@@ -34,6 +34,8 @@ from flask_login import login_required, current_user, login_user, logout_user
 from werkzeug.datastructures import  FileStorage
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
+import librosa
+import librosa.display
 
 
 class LoginForm(FlaskForm):
@@ -179,6 +181,26 @@ def predict_asymmetry_upload():
         return render_template("buttons.html")
     else:
         return render_template("homepage.html")
+def classify_audio(): #slurred_speech
+	classifier = load_model("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/SlurredSpeechDetection.h5")
+	path = os.path.join(app.config['UPLOAD_FOLDER'], "asymmetry.jpeg")
+  	audio, sample_rate = librosa.load(path) 
+ 	mfccs_features = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=128)
+  	mfccs_scaled_features = np.mean(mfccs_features.T,axis=0)
+  	mfccs_scaled_features=mfccs_scaled_features.reshape(1,-1)
+  	mfccs_scaled_features_test = sc.transform(mfccs_scaled_features)
+  	mfccs_scaled_features_test=mfccs_scaled_features_test.reshape(mfccs_scaled_features_test.shape[0],16,8,1) 
+	class_labels = ['Slurred','Normal'] #not entirely sure this was the way it was encoded, may need to swap, but pretty sure
+    	predictions = classifier.predict(mfccs_scaled_features_test)[0]
+    	label = class_labels[predictions.argmax()]
+
+	if "non" in label:
+        	return render_template("normal.html")
+    	elif "dysarthria" in label:
+        	return render_template("buttons.html")
+    	else:
+        	return render_template("homepage.html")
+  	
 #routing
 
 @app.route('/')
