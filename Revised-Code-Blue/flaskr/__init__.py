@@ -67,7 +67,7 @@ def before_request():
 app = Flask(__name__)
 app.before_request(before_request)
 app.config['SECRET_KEY']='thisisfirstflaskapp'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg','wav','mp3'}
 UPLOAD_FOLDER = '/tmp'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user-table.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -183,7 +183,7 @@ def predict_asymmetry_upload():
         return render_template("homepage.html")
 def classify_audio(): #slurred_speech
 	classifier = load_model("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/SlurredSpeechDetection.h5")
-	path = os.path.join(app.config['UPLOAD_FOLDER'], "asymmetry.jpeg")
+	path = os.path.join(app.config['UPLOAD_FOLDER'], "M03_Session2_0145.wav")
   	audio, sample_rate = librosa.load(path) 
  	mfccs_features = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=128)
   	mfccs_scaled_features = np.mean(mfccs_features.T,axis=0)
@@ -219,7 +219,8 @@ def uploader_file():
             f.save(secure_filename(f.filename))
 	    if "wav" in f.filename: #if it's an audio file....I'm really hoping this part works.
 		    return classify_audio() 
-            return predict_asymmetry_upload()
+	    else:
+            	    return predict_asymmetry_upload()
    # if this works out, I want to replace this with return predict_asymmetry_upload 
 @app.route('/video_feed')
 def video_feed():
