@@ -182,24 +182,25 @@ def predict_asymmetry_upload():
     else:
         return render_template("homepage.html")
 def classify_audio(): #slurred_speech
-	classifier = load_model("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/SlurredSpeechDetection.h5")
-	path = os.path.join(app.config['UPLOAD_FOLDER'], "M03_Session2_0145.wav")
-  	audio, sample_rate = librosa.load(path) 
- 	mfccs_features = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=128)
-  	mfccs_scaled_features = np.mean(mfccs_features.T,axis=0)
-  	mfccs_scaled_features=mfccs_scaled_features.reshape(1,-1)
-  	mfccs_scaled_features_test = sc.transform(mfccs_scaled_features)
-  	mfccs_scaled_features_test=mfccs_scaled_features_test.reshape(mfccs_scaled_features_test.shape[0],16,8,1) 
-	class_labels = ['Slurred','Normal'] #not entirely sure this was the way it was encoded, may need to swap, but pretty sure
-    	predictions = classifier.predict(mfccs_scaled_features_test)[0]
-    	label = class_labels[predictions.argmax()]
-
-	if "non" in label:
-        	return render_template("normal.html")
-    	elif "dysarthria" in label:
-        	return render_template("buttons.html")
-    	else:
-        	return render_template("homepage.html")
+    classifier = load_model("/Users/erickacorral/Desktop/Revised-Code-Blue/Code-Blue/Revised-Code-Blue/flaskr/SlurredSpeechDetection.h5")
+    path = os.path.join(app.config['UPLOAD_FOLDER'], "M03_Session2_0145.wav")
+    audio, sample_rate = librosa.load(path) 
+    mfccs_features = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=128)
+    mfccs_scaled_features = np.mean(mfccs_features.T,axis=0)
+    mfccs_scaled_features=mfccs_scaled_features.reshape(1,-1)
+   # mfccs_scaled_features_test = sc.transform(mfccs_scaled_features)
+    mfccs_scaled_features_test=mfccs_scaled_features.reshape(mfccs_scaled_features.shape[0],16,8,1)
+    #mfccs_scaled_features_test=mfccs_scaled_features_test.reshape(mfccs_scaled_features_test.shape[0],16,8,1) 
+    class_labels = ['Slurred','Normal'] #not entirely sure this was the way it was encoded, may need to swap, but pretty sure
+    predictions = classifier.predict(mfccs_scaled_features_test)[0]
+    label = class_labels[predictions.argmax()]
+    print(label)
+    if "Normal" in label:
+            return render_template("normal.html")
+    elif "Slurred" in label:
+            return render_template("buttons.html")
+    else:
+            return render_template("homepage.html")
   	
 #routing
 
@@ -215,12 +216,12 @@ def upload_file(): # type: ignore
 
 @app.route('/uploader', methods = ['POST'])
 def uploader_file():
-            f = request.files['file']
-            f.save(secure_filename(f.filename))
-	    if "wav" in f.filename: #if it's an audio file....I'm really hoping this part works.
-		    return classify_audio() 
-	    else:
-            	    return predict_asymmetry_upload()
+    f = request.files['file']
+    f.save(secure_filename(f.filename))
+    if "wav" in f.filename:
+                return classify_audio()
+    else:
+                return predict_asymmetry_upload()
    # if this works out, I want to replace this with return predict_asymmetry_upload 
 @app.route('/video_feed')
 def video_feed():
