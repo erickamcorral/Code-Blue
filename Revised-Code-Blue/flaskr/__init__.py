@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+
 from datetime import datetime
 from werkzeug.utils import redirect,secure_filename
 from flask_uploads import UploadSet,configure_uploads,IMAGES,DATA,ALL
@@ -15,7 +15,6 @@ import pickle
 import os
 from flask import Flask, flash, request
 import time
-from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,SubmitField,PasswordField,DateField,SelectField
 from wtforms import validators
 from wtforms.validators import DataRequired,Email,EqualTo,Length
