@@ -45,22 +45,15 @@
                 <p><h4>60% of people are unable to identify the signs of stroke</h4></p>
                 <p><h4>87% of strokes are ischemic</h4></p>
                 <p><h4>Strokes can occur at any age</h4></p>
-
-            <p class="lead">
-              <a class="small-btn" href="/resources" role="button">Learn more</a>
-            </p>
           </div>
       </div>
 
       <div class="col-md-6">
         <div class="card">
-            <img src="https://miro.medium.com/max/3000/1*m2gDBT_nc-iE7R4AM3sHBQ.jpeg" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">About Code Blue</h5>
                 <p class="card-text">Code Blue is a web application for stroke detection. Code Blue utilizes artificial intelligence to recognize facial paralysis. Users can acess Code Blue on any device with an internet connection.</p>
-            </div>
-          
-          
+            </div> 
         
         </div>
       </div>
@@ -82,42 +75,9 @@
                 <input type=file name=file>
                 <input type=submit value=Upload>
             </form>
-           <!-- <form method=POST enctype=multipart/form-data>
-                <input type=file name=file> 
-                <input type=submit value=Upload-Audio> I'm really hoping this is the fix needed to make it work
-            </form> -->
- <!--ok this should fix it, based on all the other things this redirects to upload.html-->
             <br><br>
 
     </div>
-
-    <!-- <h2>Select a file to upload</h2>
-    <p>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        {% endwith %}
-    </p>
-    {% if filename %}
-        <div>
-            <img src="{{ url_for('display_image', filename=filename) }}">
-        </div>
-    {% endif %}
-    <form method="post" action="/" enctype="multipart/form-data">
-        <dl>
-            <p>
-                <input type="file" name="file" autocomplete="off" required>
-            </p>
-        </dl>
-        <p>
-            <input type="submit" value="Submit">
-        </p>
-    </form> -->
 </div>
 
 {% endblock %}
