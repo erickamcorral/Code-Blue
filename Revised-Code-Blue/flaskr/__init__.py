@@ -15,6 +15,7 @@ import pickle
 import os
 from flask import Flask, flash, request
 import time
+from flask_wtf import FlaskForm
 from wtforms import StringField,TextAreaField,SubmitField,PasswordField,DateField,SelectField
 from wtforms import validators
 from wtforms.validators import DataRequired,Email,EqualTo,Length
