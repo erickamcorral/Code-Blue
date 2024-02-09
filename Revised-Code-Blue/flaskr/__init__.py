@@ -1,4 +1,4 @@
-
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.utils import redirect,secure_filename
 from flask_uploads import UploadSet,configure_uploads,IMAGES,DATA,ALL
